@@ -4,11 +4,13 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 from .manager import CustomUserManager
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    phone_number = models.CharField(max_length=20, unique=True)
+    phone_number = PhoneNumberField(unique=True)
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

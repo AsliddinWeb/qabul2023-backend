@@ -144,12 +144,15 @@ class ResendVerificationCodeView(APIView):
                 return Response({"error": "Bunday telefon raqamli foydalanuvchi topilmadi."},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            # Ma'lumotni qayta yuborish uchun avvalgi kodni o'chiramiz
+            if cache.get(phone_number):
+                return Response({"error": "Kod yuborilgan!"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             cache.delete(phone_number)
 
             # Yangi kodni yuboramiz
             verify_code = randint(1000, 9999)
-            cache.set(phone_number, verify_code, timeout=300)  # 5 daqiqa
+            cache.set(phone_number, verify_code, timeout=300)
 
             sms_text = SmsText.objects.last()
             eskiz_bearer_token = EskizBearerToken.objects.last()
