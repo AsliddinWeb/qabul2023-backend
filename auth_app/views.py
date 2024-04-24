@@ -16,7 +16,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 # Send sms
-from utils.sms import send_sms, eskiz_auth
+from utils.sms import send_sms
+from utils.eskiz_auth import eskiz_auth
 
 from random import randint
 from django.core.cache import cache
