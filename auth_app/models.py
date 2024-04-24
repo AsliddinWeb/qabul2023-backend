@@ -23,7 +23,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.phone_number
+        return str(self.phone_number)
 
     def get_full_name(self):
         return f"{self.phone_number}"
