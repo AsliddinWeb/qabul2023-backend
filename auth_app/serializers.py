@@ -138,3 +138,26 @@ class UserGetMelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'phone_number', 'is_active', 'passport', 'diplom', 'perevod_diplom', 'application']
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=20)
+
+    def validate_phone_number(self, value):
+        User = get_user_model()
+        if not User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError("Bunday telefon raqamli foydalanuvchi topilmadi.")
+        return value
+
+class ResetPasswordVerifySerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=20)
+    verify_code = serializers.CharField(max_length=6)
+
+    def validate(self, data):
+        phone_number = data.get('phone_number')
+        verify_code = data.get('verify_code')
+        cached_code = cache.get(phone_number)
+
+        if cached_code is None or str(cached_code) != verify_code:
+            raise serializers.ValidationError("Tasdiqlash kodi noto'g'ri yoki muddati o'tgan.")
+        return data

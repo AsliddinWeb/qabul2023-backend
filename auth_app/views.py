@@ -9,7 +9,9 @@ from rest_framework.exceptions import PermissionDenied
 
 from .models import Passport
 from .serializers import (RegisterSerializer, UserDetailSerializer, PassportSerializer, ChangePasswordSerializer,
-                          PhoneNumberVerificationSerializer, PhoneNumberSerializer, UserGetMelSerializer)
+                          PhoneNumberVerificationSerializer, PhoneNumberSerializer, UserGetMelSerializer,
+                          ForgotPasswordSerializer, ResetPasswordVerifySerializer
+                          )
 
 from django.contrib.auth import get_user_model
 
@@ -223,3 +225,51 @@ class GetMeAPIView(APIView):
         user = request.user
         serializer = UserGetMelSerializer(user)
         return Response(serializer.data)
+
+
+class ForgotPasswordView(APIView):
+    @swagger_auto_schema(
+        operation_description="Forgot Password!",
+        request_body=ForgotPasswordSerializer,
+        tags=['Auth'],
+    )
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            verify_code = randint(1000, 9999)
+            cache.set(phone_number, verify_code, timeout=300)  # Save the code in the cache for 5 minutes
+
+            sms_text = SmsText.objects.last()
+            eskiz_bearer_token = EskizBearerToken.objects.last()
+
+            if sms_text and eskiz_bearer_token:
+                send_sms(
+                    phone_number=phone_number,
+                    text=sms_text.text,
+                    code=verify_code,
+                    bearer_token=eskiz_bearer_token.token
+                )
+                return Response({"message": "Tasdiqlash kodi yuborildi."}, status=status.HTTP_200_OK)
+            return Response({"error": "Sms yuborishda muammo."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordVerifyView(APIView):
+    @swagger_auto_schema(
+        operation_description="Reset Password Verify!",
+        request_body=ResetPasswordVerifySerializer,
+        tags=['Auth'],
+    )
+    def post(self, request):
+        serializer = ResetPasswordVerifySerializer(data=request.data)
+        if serializer.is_valid():
+            phone_number = serializer.validated_data['phone_number']
+            User = get_user_model()
+            user = User.objects.get(phone_number=phone_number)
+            user.set_password('1234')  # Reset the password to '1234'
+            user.save()
+            cache.delete(phone_number)  # Clear the verification code from cache
+            return Response({"message": "Parol muvaffaqiyatli yangilandi."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

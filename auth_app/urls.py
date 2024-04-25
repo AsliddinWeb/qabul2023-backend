@@ -2,7 +2,9 @@ from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (RegisterView, PassportDetailView, PassportListCreateView,
-                    VerifyPhoneNumberView, ResendVerificationCodeView, ChangePasswordView, GetMeAPIView)
+                    VerifyPhoneNumberView, ResendVerificationCodeView, ChangePasswordView, GetMeAPIView,
+                    ForgotPasswordView, ResetPasswordVerifyView
+                    )
 
 urlpatterns = [
     # Authentication
@@ -15,6 +17,10 @@ urlpatterns = [
     path('resend-sms/', ResendVerificationCodeView.as_view(), name='resend-sms'),
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('getMe/', GetMeAPIView.as_view(), name='get-me'),
+
+    # Forgot password
+    path('reset-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password-verify/', ResetPasswordVerifyView.as_view(), name='reset-password-verify'),
 
     # Passport
     path('passports/', swagger_auto_schema(tags=['Passport'],
