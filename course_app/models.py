@@ -34,3 +34,12 @@ class Yonalish(models.Model):
 
     def __str__(self):
         return self.nomi
+
+class RegisterSlayder(models.Model):
+    image = models.ImageField(upload_to='/register-slayder')
+    title = models.CharField(max_length=455)
+    body = models.TextField()
+    button_text = models.CharField(max_length=455)
+
+    def __str__(self):
+        return self.title
