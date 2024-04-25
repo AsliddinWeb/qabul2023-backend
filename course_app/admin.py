@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Filial, TalimTuri, TalimShakli, Yonalish
+from .models import Filial, TalimTuri, TalimShakli, Yonalish, RegisterSlayder
 
 class FilialAdmin(admin.ModelAdmin):
     list_display = ('nomi',)
@@ -25,4 +25,11 @@ class YonalishAdmin(admin.ModelAdmin):
     search_fields = ('nomi', 'kontrakt_narxi', 'shartnoma_seriyasi')
     # raw_id_fields = ('filial', 'talim_turi', 'talim_shakli')
 
+
 admin.site.register(Yonalish, YonalishAdmin)
+
+class RegisterSlayderAdmin(admin.ModelAdmin):
+    list_display = ('title', 'image', 'button_text')
+    search_fields = ('title', 'body')
+
+admin.site.register(RegisterSlayder, RegisterSlayderAdmin)
