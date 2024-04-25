@@ -6,5 +6,5 @@ urlpatterns = [
     path('talim-turlari/', TalimTuriListView.as_view(), name='talim-turi-list'),
     path('talim-shakllari/', TalimShakliListView.as_view(), name='talim-shakli-list'),
     path('yonalishlar/', YonalishListView.as_view(), name='yonalish-list'),
-    path('register-motivation/', YonalishListView.as_view(), name='register-motivation-list'),
+    path('register-motivation/', RegisterSlayderListView.as_view(), name='register-motivation-list'),
 ]
